@@ -1,0 +1,13 @@
+# Copy run host public key to authorized hosts
+- name: create authorized key file file
+  file:
+    path: "/home/{{ uusername }}/.ssh/authorized_keys"
+    state: touch
+  become: yes
+  become_user: '{{ uusername }}'
+
+- name: copy pubkey to target user
+  authorized_key:
+    user: '{{ uusername }}'
+    state: present
+    key: "{{ lookup('file', './files/id_rsa.pub') }}"

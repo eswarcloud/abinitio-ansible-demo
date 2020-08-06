@@ -1,0 +1,8 @@
+---
+- hosts: "tag_product_env_abinitio_*:&tag_function_emebox"
+  strategy: debug
+  become: yes
+  roles:
+    - ssh_key_exchange
+    - Eme_creation
+    - keyServer

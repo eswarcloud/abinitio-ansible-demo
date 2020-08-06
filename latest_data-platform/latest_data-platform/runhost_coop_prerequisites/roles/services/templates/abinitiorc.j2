@@ -1,0 +1,30 @@
+AB_CONNECTION : ssh
+AB_EME_DATASTORES : aieme
+AB_AIR_ROOT @ aieme : //use1aphsdpscm01.aws.cioxhealth.com/opt/abinitio/eme/aieme
+
+# system-wide config var settings
+AB_WORK_DIR: /persist/abinitio/prd/data/data
+AB_VOLATILE_DIR: /persist/abinitio/prd/data/data/data/volatile
+
+AB_RESERVED_TCP_LISTENER_PORTS : 6150
+AB_NODES: use1aphsdpscm01.aws.cioxhealth.com
+
+
+# Max and Min ports used by Co>Op System
+
+AB_TCP_PORT_LEAST : 20000
+AB_TCP_PORT_MOST : 22000
+
+AB_AIR_TCP_PORT_LEAST : 20000
+AB_AIR_TCP_PORT_MOST : 22000
+
+AB_UMASK : 002
+AB_MUX_USE_HADOOP : false
+
+AB_CONNECTION @ use1aphsdpscm01.aws.cioxhealth.com : ssh
+AB_CONNECTION @ unixhost_all : ssh
+AB_CONNECTION : ssh
+AB_SSH_NEEDS_PASSWORD : false
+AB_OPS_CONSOLE_URL : http://use1aphsdpweb01.aws.cioxhealth.com:8080/controlcenter
+JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk
+AB_JAVA_HOME : /usr/lib/jvm/java-1.8.0-openjdk

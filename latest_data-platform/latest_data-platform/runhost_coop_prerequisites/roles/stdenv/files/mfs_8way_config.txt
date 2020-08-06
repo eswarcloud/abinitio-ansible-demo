@@ -1,0 +1,8 @@
+/persist/mfs_part1/prd/mfs_8way000
+/persist/mfs_part1/prd/mfs_8way002
+/persist/mfs_part1/prd/mfs_8way004
+/persist/mfs_part1/prd/mfs_8way006
+/persist/mfs_part2/prd/mfs_8way001
+/persist/mfs_part2/prd/mfs_8way003
+/persist/mfs_part2/prd/mfs_8way005
+/persist/mfs_part2/prd/mfs_8way007

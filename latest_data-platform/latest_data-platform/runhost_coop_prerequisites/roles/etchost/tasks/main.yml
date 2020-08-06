@@ -1,0 +1,5 @@
+- name: copy hosts file to /etc location
+  copy:
+    src: ./files/hosts
+    dest: /etc/
+  become: yes

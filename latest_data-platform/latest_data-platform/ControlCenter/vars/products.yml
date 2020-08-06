@@ -1,0 +1,14 @@
+ai_user: abiadm
+ai_grp: abiadms
+file_path: /tmp/ansible/packages
+cc_package: ControlCenter.V3-5-1-1.tar.gz
+cc_ver_num: 3.5.1.1
+db_host: use1fdinitioscm.aws.cioxhealth.com
+web_host: use1fdinitioweb.aws.cioxhealth.com
+bridge_host: use1fdinitiodev.aws.cioxhealth.com
+bridge_port: 7070
+opdb_username: opdb_cc
+opdb_password: Ciox@123
+db_name: opdb_cc2
+deployment_name: Control_Center
+sql_jdbc_jar: /tmp/saurabh/cc/sqljdbc_6.2/enu/mssql-jdbc-6.2.2.jre8.jar

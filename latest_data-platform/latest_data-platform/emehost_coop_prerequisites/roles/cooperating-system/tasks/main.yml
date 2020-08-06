@@ -1,0 +1,44 @@
+# Copies the Co>Operating System installer from the nexus,
+# installs the Co>Operating System, and copies the "abinitiorc.j2"
+# to the appropriate directory
+
+---
+
+- name: create a directory for the installer
+  file:
+    path: '{{ workdir }}'
+    state: directory
+
+- name: copy binaries from nexus repo
+  get_url:
+    url: https://nexus.cioxhealth.com/repository/binary-public/AbInitioSoftware/AI3-5-1-5/AbInitio.{{ abinitio_version }}.Linux-x86_gcc4p64.tar.gz
+    dest: '{{ workdir }}'
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0775
+
+- name: extract the Co>Operating System installer
+  unarchive:
+    src: '{{ workdir }}/{{ installer }}'
+    dest: '{{ workdir }}'
+    remote_src: yes
+
+- name: install the Co>Operating System
+  shell: |
+    ./abinst destination=/opt/abinitio owner={{ uusername }} group={{ ugroup }} \
+    app_hub_dest=/opt/abinitio/abinitio-app-hub lser=2208 tmpdir={{ AB_TMPDIR }} \
+    install_fat=true utility={{ AB_WORK_DIR }} data_dir={{ AB_DATA_DIR }}
+    ln -s  /opt/abinitio/abinitio-{{ abinitio_version }} /opt/abinitio/ab-run-time
+  args:
+      chdir: '{{ workdir }}/AbInitio.{{ abinitio_version }}.Linux-x86_gcc4p64'
+
+- name: copy abinitio configuration
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0755
+  with_items:
+    - src: abinitiorc.j2
+      dest: '/home/{{ uusername }}/.abinitiorc'

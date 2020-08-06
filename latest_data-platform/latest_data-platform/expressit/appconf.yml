@@ -1,0 +1,41 @@
+---
+
+- hosts: dev
+  become: yes
+  vars_files:
+    - vars/products.yml
+  tasks:
+   - name: Creating workdir for installation
+     file:
+       path: '/home/{{ ai_user }}/eit-install'
+       state: directory
+       owner: '{{ ai_user }}'
+       group: '{{ ai_grp }}'
+       mode: 0755
+       
+   - name: copy ExpressIT setup.properties
+     template:
+       src: templates/setup.properties.j2
+       dest: '/home/{{ ai_user }}/eit-install/setup.properties'
+       owner: '{{ ai_user }}'
+       group: '{{ ai_grp }}'
+       mode: 0755
+       
+   - name: File copy
+     copy:
+       src: '{{ file_path }}/{{ eit_package }}'
+       dest: '/home/{{ ai_user }}/eit-install'
+       owner: '{{ ai_user }}'
+       group: '{{ ai_grp }}'
+       mode: 0775
+       
+   - name: creating Express IT war
+     become: yes
+     become_user: '{{ ai_user }}'
+     shell: |
+        cd /home/{{ ai_user }}/eit-install
+        tar -xvf {{ eit_package }}
+        pkg='{{ eit_package }}'
+        cd /home/{{ ai_user }}/eit-install/`echo $pkg | awk -F ".tar" '{print $1}'`
+        cp /home/{{ ai_user }}/eit-install/setup.properties .
+        ./setup.sh batch

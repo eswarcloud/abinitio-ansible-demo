@@ -1,0 +1,8 @@
+update: false
+java_home: /usr/lib/jvm/jre-1.8.0-openjdk
+uusername: abiadm
+uggroup: abiadms
+AB_WORK_DIR: /persist/abinitio/prd/data
+AB_DATA_DIR: /persist/serial/prd/data
+AB_VOLATILE_DIR: /persist/serial/prd/data/volatile
+AB_TMPDIR: /tmp

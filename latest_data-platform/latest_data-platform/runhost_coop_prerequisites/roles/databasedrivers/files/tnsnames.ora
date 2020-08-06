@@ -1,0 +1,52 @@
+ROIPROD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = roiprod.smartcorp.net)(PORT = 1553))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = roiprod)
+    )
+  )
+
+LAWPROD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = lawprod.smartcorp.net)(PORT = 1584))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = lawprod)
+    )
+  )
+
+
+SMARTLOG =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = smartlog.smartcorp.net)(PORT = 1537))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = smartlog)
+    )
+  )
+
+ERDEV =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = erdev.smartcorp.net)(PORT = 1536))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = erdev)
+    )
+  )
+
+COGNOSDW =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = cognosdw.smartcorp.net)(PORT = 1533))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = cognosdw)
+    )
+  )

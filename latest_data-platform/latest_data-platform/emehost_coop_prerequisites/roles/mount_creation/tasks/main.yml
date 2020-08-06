@@ -1,0 +1,19 @@
+# Mount the devices created with parted command
+
+- name: Mount AB_WORK_DIR
+  mount:
+    path: /persist/abinitio
+    src: /dev/nvme1n1p1
+    fstype: ext4
+    opts: defaults
+    state: mounted
+
+
+
+- name: Mount Serial,sandbox working area
+  mount:
+    path: /persist/serial
+    src: /dev/nvme1n1p2
+    fstype: ext4
+    opts: defaults
+    state: mounted

@@ -1,0 +1,12 @@
+file_path: /tmp/ansible/packages
+cc_package: ControlCenter.V3-5-1-1.tar.gz
+cc_ver_num: 3.5.1.1
+db_host: hsdataplatform-prod.crvcvqox7pst.us-east-1.rds.amazonaws.com
+web_host: use1aphsdpweb01.aws.cioxhealth.com
+bridge_host: use1aphsdpdev01.aws.cioxhealth.com
+bridge_port: 7070
+opdb_username: svc_abinitio
+opdb_password: lhEEBD8xDTBV
+db_name: abinitio_ctrl
+deployment_name: controlcenter
+sql_jdbc_jar: /tmp/sqljdbc_6.2/enu/sqljdbc_6.2/enu/mssql-jdbc-6.2.2.jre8.jar

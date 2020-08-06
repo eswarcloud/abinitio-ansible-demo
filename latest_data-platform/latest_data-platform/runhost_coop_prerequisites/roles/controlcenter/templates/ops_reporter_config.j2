@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO8859-1" standalone="yes" ?>
+<configValues>
+
+  <!--
+       reporter-config.xml items have satisfactory default values and should only
+       be changed in consultation with Ab Initio support.  For a complete set of
+       options and default values, run:
+
+         ops-reporter show-config [-config /~ab_home/config/reporter-config.xml]
+  -->
+
+  <!--
+       The default Web Service Security username/passwords should be changed here
+       in concert with the username/passwords in the Control Center.
+  -->
+  <configValue name="OpConsoleWssUsername" value="ocagent"/>
+  <configValue name="OpConsoleWssPassword" value="{{ ocagent_password }}"/> <!-- from m_password -->
+
+  <configValue name="MetadataHubWssUsername" value="admin"/>
+  <configValue name="MetadataHubWssPassword" value="vDTBC0PWtzeW5VJIpqwx9p"/> <!-- from m_password -->
+
+  <!--
+       AB_OPS_MONITOR_DIRECTORY default value is: /~ab_local_data_dir/ops
+  -->
+  <arrayValue name="AbDataDirs">
+    <value>/~ab_data_dir</value>
+  </arrayValue>
+
+</configValues>

@@ -1,0 +1,16 @@
+/persist/mfs_part1/prd/mfs_16way000
+/persist/mfs_part1/prd/mfs_16way002
+/persist/mfs_part1/prd/mfs_16way004
+/persist/mfs_part1/prd/mfs_16way006
+/persist/mfs_part1/prd/mfs_16way008
+/persist/mfs_part1/prd/mfs_16way010
+/persist/mfs_part1/prd/mfs_16way012
+/persist/mfs_part1/prd/mfs_16way014
+/persist/mfs_part2/prd/mfs_16way001
+/persist/mfs_part2/prd/mfs_16way003
+/persist/mfs_part2/prd/mfs_16way005
+/persist/mfs_part2/prd/mfs_16way007
+/persist/mfs_part2/prd/mfs_16way009
+/persist/mfs_part2/prd/mfs_16way011
+/persist/mfs_part2/prd/mfs_16way013
+/persist/mfs_part2/prd/mfs_16way015

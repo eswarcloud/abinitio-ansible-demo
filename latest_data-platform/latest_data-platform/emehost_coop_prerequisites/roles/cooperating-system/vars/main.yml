@@ -1,0 +1,5 @@
+workdir: /tmp/abinst
+abinitio_version: V3-5-1-5
+installer: 'AbInitio.{{ abinitio_version }}.Linux-x86_gcc4p64.tar.gz'
+uusername: abiadm
+ugroup: abiadms

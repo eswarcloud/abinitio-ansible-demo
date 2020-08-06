@@ -1,0 +1,49 @@
+# Builds a multifile system for the project
+# 8way and 16way mfs systems will be created.
+
+- name: update permissions of data directories
+  file:
+    dest: '{{ item }}'
+    mode: 02775
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+  with_items:
+    - '{{ code_serial_file_base }}'
+
+- name: Create project directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    mode: 02775
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+  with_items:
+    - '{{ sandbox_path }}'
+    - '{{ mfs_control_path }}'
+    - '{{ data_area1 }}'
+    - '{{ data_area2 }}'
+
+- name: copy multifile data parts to tmp location
+  copy:
+    src: '{{ item }}'
+    dest: /tmp/
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 02775
+  with_items:
+    - ./files/mfs_16way_config.txt
+    - ./files/mfs_8way_config.txt
+
+- name: build mfs - 16way
+  shell: |
+   . /home/{{ uusername }}/.profile
+   m_mkfs -m 755 -g {{ ugroup }} {{ mfs_control_path }}/mfs_16way -f /tmp/mfs_16way_config.txt
+  become: yes
+  become_user: '{{ uusername }}'
+
+- name: build mfs - 8way
+  shell: |
+   . /home/{{ uusername }}/.profile
+   m_mkfs -m 755 -g {{ ugroup }} {{ mfs_control_path }}/mfs_8way -f /tmp/mfs_8way_config.txt
+  become: yes
+  become_user: '{{ uusername }}'

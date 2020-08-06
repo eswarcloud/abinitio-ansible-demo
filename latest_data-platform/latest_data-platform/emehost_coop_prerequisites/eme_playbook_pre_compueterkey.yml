@@ -1,0 +1,12 @@
+---
+- hosts: "tag_product_env_abinitio_*:&tag_function_emebox"
+  debugger: on_failed
+  become: yes
+  roles:
+    - partitions
+    - filesystems
+    - mount_creation
+    - create-user
+    - installpackages
+    - cooperating-system
+    - ab-computer-info

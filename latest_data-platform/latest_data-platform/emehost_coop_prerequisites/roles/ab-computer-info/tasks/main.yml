@@ -1,0 +1,33 @@
+# Obtains computer information for all run hosts
+---
+
+- name: create tmp directory
+  file:
+    path: ~/.ansible/tmp
+    state: directory
+    mode: 02775
+  become: yes
+  become_user: '{{ uusername }}'
+
+- name: create directory for ab-cinfod
+  file:
+    path: /opt/abinitio/ab-cinfod
+    state: directory
+    mode: 02775
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+
+- name: ab-cinfo-util
+  shell: |
+   . /home/{{ uusername }}/.profile
+   ab-cinfo-util create -cloud /opt/abinitio/ab-cinfod
+   ab-cinfod &
+
+- name: ab-computer-info
+  shell: |
+   . /home/{{ uusername }}/.profile
+   ab-computer-info > ab-computer-info.output
+  args:
+    chdir: /home/{{ uusername }}
+  become: yes
+  become_user: '{{ uusername }}'

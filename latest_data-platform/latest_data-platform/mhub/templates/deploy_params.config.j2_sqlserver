@@ -1,0 +1,926 @@
+[abiadm@use1fdinitiodev config]$ cat deploy_params.config
+## Parameter file for 'Metadata Hub' or 'Authorization Gateway' deployment
+
+## NOTE: All parameters must be specified using the syntax
+##     <parameter-name>: <value>
+
+## Parameters with default values are commented out in this file.
+## To override the default value, uncomment the parameter and replace
+## the value.
+deployment.type_basic: 'N'
+## A deployment can be of type 'basic' or 'custom'.
+## A basic deployment uses:
+##  * The Ab Initio embedded database server 'ab-db',
+##  * The Ab Initio embedded application server 'ab-app'
+##  * Default values for deployment parameters.
+
+## A custom deployment allows you to choose the database and application
+## server types and prompts you for additional the deployment parameter values.
+## Note: you can create a custom deployment and still use ab-db and or ab-app
+## as your database and application servers.
+## If you would like to use ab-db and ab-app without the default parameters,
+## you must set this parameter to 'N'.
+
+deployment.name: '{{ mhub_deployment_name }}'
+## Name of the deployment to be created. For example: POC1
+## Typically, this is the leaf directory in the path that specifies the
+## deployment directory.
+
+# db.dsname: ${deployment.name}
+## The name of the datastore. This is a logical name that by default
+## is set to the deployment name, but it can be different.
+## This may be different from the database name, which you can set
+## in a subsequent prompt.
+
+db.type: 'sqlserver'
+## Specify type of database server that is installed and running.
+## Note: 'ab-db' is the database server that is typically used for creating
+## proof of concept deployments.
+## Valid values are:
+##  ab-db, db2, oracle, postgresql, sqlserver
+## Default values depend on value of deployment.type_basic:
+##     *: sqlserver
+##     Y: ab-db
+
+db.host: '{{ db_host }}'
+## Host machine where database server is installed and running.
+## This machine should be reachable from the deployment host.
+
+# db.instance.name:
+## The unique database instance name.
+## For Oracle, this is typically the service name for the instance.
+## Default values depend on value of db.type:
+##     ab-db: ${db.dsname}
+##     db2: ${db.dsname}
+##     oracle:
+##     postgresql: ${db.dsname}
+##     sqlserver: ${db.dsname}
+
+db.name: '{{ mhub_db_name }}'
+## The database name as used in the datastore properties file for JDBC
+## connectivity. By default, this is set to the datastore name, but it
+## can be different. For Oracle, it's typically a service name for the instance.
+## Can differ from the database name in the .dbc file, which can be specified
+## in a subsequent prompt.
+## Default values depend on value of db.type:
+##     ab-db: ${db.instance.name}
+##     db2: ${db.dsname}
+##     oracle: ${db.instance.name}
+##     postgresql: ${db.instance.name}
+##     sqlserver: $(GetSQLServerDbName ${db.dsname})
+
+# db.create: Y
+## Whether a new database should be created. If this is a new deployment that uses
+## an existing database, then the value of this parameter should be 'N'. In cases
+## when the database from a previous deployment is upgraded and is to be used with
+## a new deployment, this variable should be set to 'N'.
+## NOTE: If this value is set to 'N', you need to be certain that the db related
+## parameters all exactly match the database you are using for the deployment.
+
+# db.port:
+## Port that database server is listening.
+## If using local 'ab-db', and would like deployment process to create an instance,
+## you need not provide a value. Alternatively, you can provide the port number
+## to use for the new instance or an existing running instance.
+## Default values depend on value of db.type:
+##     ab-db:
+##     db2: 15054
+##     oracle: 1521
+##     postgresql: 5432
+##     sqlserver: 1433
+
+db.jdbc_driver: '{{ sql_jdbc_jar }}'
+## This parameter specifies the path to the JDBC driver to be used by
+## administrative tools to communicate with the datastore for this deployment.
+## $(promptStringForJDBCDir)
+## Default values depend on value of db.type:
+##     *:
+##     ab-db: "$(postgresDriverLocation)"
+##     postgresql: "$(postgresDriverLocation)"
+
+# db.oracle.wallet: N
+## For Oracle deployments, this parameter indicates whether you are
+## using Oracle Wallet. Note that this requires that your DBA has created
+## and setup the Wallet(s) using mkstore command and added the required
+## configuration to the sqlnet.ora and tnsnames.ora files.
+## Using Oracle Wallet has implications on connectivity parameters and on
+## authentication for the user accounts created.
+
+# db.security.cyber_ark: N
+## Specifies whether CyberArk Vault is used to store datastore account passwords.
+## If so, the account password must be specified as an EPRS string generated
+## using m_eprs_password utility and is expected to have the following format:
+## 4,EPRS=BY<N|C>,<encoded vault access parameters>
+
+# db.admin.username:
+# db.admin.password:
+# db.admin.mhub_encrypted_password:
+## OPTIONAL: Not needed if DBA will create the datastore on database server.
+## DBA username/password used for creating datastore and schemas.
+## If the cleartext password is specified, it is always used.
+## To use an encrypted password:
+##  1) Run the $_adminToolsExe encrypt command with the -password <cleartext> option
+##     to create an encrypted password.
+##  2) Uncomment the db.admin.password parameter above and set its
+##     value to the empty string
+##  3) Uncomment the db.admin.encrypted_password above
+##     and set its value to the encrypted password just created.
+## Default values depend on value of db.type:
+##     ab-db: sa/
+##     db2: /
+##     oracle: /
+##     postgresql: /
+##     sqlserver: /
+## Specify either a clear text or encrypted password.
+## If both are specified, the clear text password will be used.
+## To create an mhub_encrypted password, use the command 'mh-admin encrypt'.
+
+# mh.master.password: $(defaultMasterPassword)
+## =============================================================================
+## This parameter specifies the user provided master password string. For basic
+## deployments, this is used to generate the following set of passwords:
+## ab-db superuser (used to create an ab-db instance), database user accounts:
+## appserver, importer, report, the user login accounts: admin and importer and
+## the bridge security key.
+
+# mh.master.password_mhub_encrypted:
+
+# db.abdb.superuser.username: sa
+# db.abdb.superuser.password:
+## An ab-db database instance will be created for this deployment.
+## Specify the username and password with privileges to create an
+## ab-db instance.
+
+# db.oracle_wallet.jars:
+## This parameter specifies the path to the directory containing the set of JAR
+## files required by Oracle Wallet: oraclepki.jar, osdt_cert.jar, osdt_core.jar
+## Note: all the jars must be located in this directory.
+
+# db.oracle.tns_admin_dir:
+## This parameter specifies the the path to the directory on the Oracle client that
+## contains tnsnames.ora and sqlnet.ora files that will be used by the application
+## once deployed.
+## Note: The sqlnet.ora file in this directory contains the WALLET_LOCATION descriptor,
+## and the tnsnames.ora file defines all the aliases used to access the database
+## for the various accounts.
+
+# db.oracle.wallet_directory:
+## Oracle finds the wallet files in this directory. This is the DIRECTORY value
+## in the WALLET_LOCATION definition in the sqlnet.ora file. User accounts are
+## stored in the wallet based on TNS aliases configured in tnsnames.ora file.
+## The full descriptor is not needed. It will be constructed from the directory
+## path provided.
+## Note: If using something other than a directory for wallet location, then
+## provide the correponding location string. Verify that the db.oracle.wallet_location
+## parameter is correctly derived from this.
+
+# db.oracle.wallet.appserver.jdbc_url:
+## You must specify a JDBC URL for datastore connectivity for user: appserver
+## This is the URL that the web application will use to connect to the database.
+
+# db.oracle.wallet.main.jdbc_url:
+## You must specify a JDBC URL for datastore connectivity for user: main
+## This must be distinct from the URL used for the 'appserver' user
+
+# db.oracle.wallet.meta.jdbc_url:
+## You must specify a JDBC URL for datastore connectivity for user: meta
+## This must be distinct from the URL used for the 'main' and 'appserver' users
+
+# db.oracle.wallet.for.importer: ${db.oracle.wallet}
+## If you are using Oracle Wallet for the importer account, you will need
+## to provide the db.dbc.db_name value as the TNS alias that is referenced by
+## the Wallet descriptor in the sqlnet.ora file.
+
+# db.oracle.wallet.tns_alias:
+## If using Oracle wallet authentication for your importer account, you must specify
+## the TNS alias that will be used to connect as the importer. The wallet should
+## include the credentials for the importer user.
+
+# db.oracle.wallet_location: (SOURCE=(METHOD=FILE)(METHOD_DATA=(DIRECTORY=${db.oracle.wallet_directory})))
+## ADVANCED. This is the complete descriptor string for the WALLET_LOCATION
+## as specified in the sqlnet.ora file. You should not need to modify this unless
+## your wallet location is not a directory. But you SHOULD verify that this value
+## is identical to the WALLET_LOCATION in the sqlnet.ora file that will be used.
+
+# db.oracle.tns_admin_dir.admin: ${db.oracle.tns_admin_dir}
+## Optional. This parameter specifies the the path to the Oracle directory that
+## contains TNS names and SQLNet files that will be used by the admin-tools account.
+## You should not need to modify this, unless you are using a different Wallet for
+## admin-tools than the one used for the database accounts.
+
+# db.oracle.wallet_location.admin: ${db.oracle.wallet_location}
+## Optional. Oracle Wallet location descriptor used by admin-tools. You should
+## not need to modify this, unless you are using a different Wallet for admin-tools
+## than the one used for database accounts.
+
+# db.datastore.prefix_base:
+## Base (prefix) for the db.datastore.prefix parameter
+## This is used in setting db dependent default values for db.datastore.prefix
+## Default values depend on value of deployment.context:
+##     ag: ag_
+##     mh: mhub_
+
+# db.datastore.prefix:
+## Prefix to use for creating roles and schema names. The prefix
+## will be prepended to the appserver, importer, and report accounts,
+## and the main and meta schema names.
+## Default values depend on value of db.type:
+##     ab-db: ${db.datastore.prefix_base}
+##     db2: ${db.datastore.prefix_base}
+##     oracle: ${db.datastore.prefix_base}
+##     postgresql: ${db.datastore.prefix_base}
+##     sqlserver:
+
+# db.appserver.username:
+# db.appserver.password:
+# db.appserver.mhub_encrypted_password:
+## Database username and password for the application server account.
+## Default values depend on value of db.type:
+##     ab-db: ${db.datastore.prefix}appserver/
+##     db2: ${db.datastore.prefix}app/
+##     oracle: ${db.datastore.prefix}appserver/
+##     postgresql: ${db.datastore.prefix}appserver/
+##     sqlserver: ${db.datastore.prefix}appserver/
+## Specify either a clear text or encrypted password.
+## If both are specified, the clear text password will be used.
+## To create an mhub_encrypted password, use the command 'mh-admin encrypt'.
+
+# db.importer.username:
+# db.importer.password:
+# db.importer.mhub_encrypted_password:
+# db.importer.ab_encrypted_password:
+# db.importer.abv1_encrypted_password:
+## Database username and password for the importer account.
+## Default values depend on value of db.type:
+##     ab-db: ${db.datastore.prefix}importer/
+##     db2: ${db.datastore.prefix}imp/
+##     oracle: ${db.datastore.prefix}importer/
+##     postgresql: ${db.datastore.prefix}importer/
+##     sqlserver: ${db.datastore.prefix}importer/
+## Specify either a clear text or encrypted password.
+## If both are specified, the clear text password will be used.
+## To create an mhub_encrypted password, use the command 'mh-admin encrypt'.
+## To create an ab_encrypted password, use the command 'm_password -unrestricted'.
+## To create an abv1_encrypted password, use the command 'AB_TEST=1 m_password -unrestricted -v1'.
+
+# db.report.username:
+# db.report.password:
+# db.report.mhub_encrypted_password:
+## Username and password for the report account.
+## Default values depend on value of db.type:
+##     ab-db: ${db.datastore.prefix}report/
+##     db2: ${db.datastore.prefix}rpt/
+##     oracle: ${db.datastore.prefix}report/
+##     postgresql: ${db.datastore.prefix}report/
+##     sqlserver: ${db.datastore.prefix}report/
+## Specify either a clear text or encrypted password.
+## If both are specified, the clear text password will be used.
+## To create an mhub_encrypted password, use the command 'mh-admin encrypt'.
+
+ui.webaccess.admin.password: ''
+
+ui.webaccess.admin.password_hash_encrypted: 'B1(2a,10):9GqAMa/XeldidwydUYM6NQ==:$2a$10$7Eo.KY9VcjbgbuwbSWK4LOexRN5CMaQ6gZ4kId2yk2aDQ46kK9lTm'
+## Hashed password used for the 'admin' account, used when logging in from the
+## ${PRODUCT_NAME} portal.
+
+ui.webaccess.admin.ab_encrypted_password: '2,,zZtqOy8CCwOZmQ8CndCl8dPqiITwr02_iEqdHnf9PNa'
+## Encrypted password used for the 'admin' account, used by importer conn params
+
+ui.webaccess.importer.password: ''
+
+ui.webaccess.importer.password_hash_encrypted: 'B1(2a,10):vd+ula4gctH2YTTbsFIMig==:$2a$10$tb8sjY2earF0WRRZqDGKgeE6QuLLu7AYYxQWkaas5qf2vn02M721e'
+## Hashed password used for the 'importer' account, used when logging in from the
+## ${PRODUCT_NAME} portal.
+
+ui.webaccess.importer.ab_encrypted_password: '2,,-9DMSoccNPYTGeajizEJ-bV1bJtuPvnMaxCdSKL35CI'
+## Encrypted password used for the 'importer' account, used by importer conn params
+
+# db.enableQueryItAccess: N
+## You can enable the datastore for access to external objects using Query>It.
+## You can optionally provide the Query>It role and password for external object access.
+
+# db.queryit.username:
+# db.queryit.password:
+# db.queryit.mhub_encrypted_password:
+# db.queryit.ab_encrypted_password:
+## You can optionally provide the user and password for access to external objects
+## using QueryIt.
+## Default values depend on value of db.type:
+##     ab-db: /
+##     db2: /
+##     oracle: /
+##     postgresql: /
+##     sqlserver: /
+## Specify either a clear text or encrypted password.
+## If both are specified, the clear text password will be used.
+## To create an mhub_encrypted password, use the command 'mh-admin encrypt'.
+## To create an ab_encrypted password, use the command 'm_password -unrestricted'.
+
+# db.datastore.main_schema: ${db.datastore.prefix}main
+## ADVANCED: A datastore contains main and meta schemas.
+## The default names of these schemas depend on the database type.
+## It is VERY unlikely that you need to modify these schema names
+# db.datastore.meta_schema: ${db.datastore.prefix}meta
+
+# db.datastore.main_password:
+## In Oracle, the main schema is a user account. You can specify a
+## password for this account or use the default appserver password.
+## Default values depend on value of db.type:
+##     *:
+##     oracle: ${db.appserver.password}
+# db.datastore.main_password_mhub_encrypted:
+## In Oracle, the main schema is a user account. You can specify an
+## encrypted password for this account using admin-tools encryption
+## Default values depend on value of db.type:
+##     *:
+##     oracle: ${db.appserver.mhub_encrypted_password}
+
+# db.datastore.meta_password:
+## In Oracle, the meta schema is a user account. You can specify a
+## password for this account or use the default main user password.
+## Default values depend on value of db.type:
+##     *:
+##     oracle: ${db.datastore.main_password}
+# db.datastore.meta_password_mhub_encrypted:
+## In Oracle, the meta schema is a user account. You can specify an
+## encrypted password for this account using admin-tools encryption
+## Default values depend on value of db.type:
+##     *:
+##     oracle: ${db.datastore.main_password_mhub_encrypted}
+
+# db.datastore.destroy_if_exists: N
+## ADVANCED: Datastore may already have been created by a previous
+## deployment. If you would like to destroy the existing datastore
+## specify the value of this parameter as 'Y'
+## *WARNING*: Ensure that you have backed up your existing datastore
+
+# db.datastore.create_params:
+## ADVANCED: Additional parameters for $_adminToolsExe datastore
+## create or restore. The deployment process uses the $_adminToolsExe
+## datastore create command to create the datastore. This command
+## takes a number of options, which can be specified through this
+## parameter.
+## For example: the value '-extensions-file <path-to-file>'
+## indicates that the user defined objects in the specified file
+## should be loaded into the datastore.
+## You can run $_adminToolsExe help datastore create
+## for a list of all the valid parameters.
+
+# db.datastore.custom_properties_file:
+## ADVANCED: Typically, the deploy process generates a datastore properties file,
+## based on the datastore configuration pararameters specified.
+## Instead, you can specify a custom properties file, that must contain the
+## set of parameters that are needed for creating a valid datastore for this
+## deployment. You might want to do this, for example, if your datastore uses
+## a named SQL Server instance or if the generated file has unexpected issues.
+## Check a working properties file and use that as a template.
+
+# db.jdbc_url:
+## ADVANCED: You can specify a custom JDBC URL for datastore connectivity.
+## By default, this is computed and it is very unlikely that you need
+## to override the default. If you are using Oracle Intenet Directory
+## or Oracle RAC, you may need to provide the custom JDBC URL.
+
+# db.datastore.restore_from:
+## ADVANCED: You can load the Metadata Hub database from a
+## previously backed up database. This parameter specifies the
+## full path of a Metadata Hub database backup file that was
+## created using the '$_adminToolsExe datastore backup' command.
+## NOTE: The backup file must match the version of the Metadata Hub
+## database that is being created for this deployment.
+
+# db.datastore.reset_security: N
+## ADVANCED: If creating the Metadata Hub datastore from a previously
+## backed up datastore, you can choose to reset the security configuration.
+## The 'admin' and 'importer' user login passwords from this configuration
+## will be used to override those in the backup.
+## Typically, set to 'Y' when restoring a datastore for testing purposes,
+## or if the original passwords are not known.
+
+# db.datastore.upgrade_options:
+## ADVANCED: You can load the Metadata Hub database from a
+## previously backed up database. Once the datastore is restored,
+## then it should be upgraded to the current release.
+## This parameter specifies the set of arguments to the
+## '$_adminToolsExe datastore upgrade-object-model'
+## command that is run after the datastore has been restored.
+## For example, '-extensions-file <object-model-customization-file>'
+
+# db.datastore.upgrade_restored_db: manual_if_needed
+## ADVANCED: You can load the Metadata Hub database from a
+## previously backed up database. This parameter specifies the
+## upgrade mode following the creation of the database from the
+## backup file.
+## NOTE: Only if the backed up database is the same version as
+## the Metadata Hub deployment being created, and there are
+## no customizations OR you are sure that the database is
+## automatically upgradeable, then select 'upgrade_if_needed'
+## or 'upgrade_always'.
+## Otherwise, select 'manual_if_needed' or 'manual_always'.
+## If you are not sure, please contact Ab Initio Support.
+## Valid values are:
+##  manual_always, manual_if_needed, upgrade_always, upgrade_if_needed
+
+# db.dbc.oracle_service_name: ${db.name}
+## Service name alias for connecting to the Oracle database instance,
+## as specified in the tnsnames.ora file on the Oracle client.
+## This parameter is used by the generated .dbc file to connect to the
+## database. If an intermediate database client is not used, this may be
+## the same as the service name used for JDBC connectivity.
+
+db.dbc.db_nodes: 'localhost'
+## If using a remote connection, this is the host where the database client
+## is installed and is used to connect to the database server. This may
+## be the same as the database server. It can be left empty if the localhost
+## is the database client.
+
+# db.dbc.db_home:
+## Database home directory - this is different for each database type.
+## For Oracle, this is typically the value of ORACLE_HOME.
+## For DB2, this is typically the value of DB2DBDFT.
+## Default values depend on value of db.type:
+##     ab-db: $AB_HOME/lib/postgresql
+##     db2: ${DB2DBDFT}
+##     oracle: ${ORACLE_HOME}
+##     postgresql: $AB_HOME/lib/postgresql
+##     sqlserver:
+
+# db.dbc.custom_template:
+## ADVANCED: Typically, the deploy process generates a dbc file based on
+## a standard template.
+## Instead, you can specify a custom dbc template file with this parameter.
+## Your custom file must contain the minimal set of parameters that are needed
+## for creating a valid dbc file for the deployment. The Installation Guide
+## specifies additional information on the required parameters in the DBC file.
+
+# db.dbc.db_name:
+## Alias for datastore name. Used when the deployment host communicates
+## with the database via an intermediate database client.
+## NOTE: If using Wallet, this should be the same as the TNS alias used to
+## connect as the importer.
+## Default values depend on value of db.type:
+##     ab-db: ${db.dsname}
+##     db2: ${db.name}
+##     oracle: $(GetDbAliasForOracle)
+##     postgresql: ${db.name}
+##     sqlserver: ${db.name}
+
+# db.dbc.db_version:
+## Database version in the .dbc file. This may be needed to use the correct
+## client library for connecting to the database server.
+## NOTE: specify the value to the one appropriate to your actual installation,
+## If you are using a custom .dbc file, the value provided here will override
+## the db_version value specified in your custom .dbc file.
+## sqlserver: 11
+## oracle: 11.2
+## db2: 9.7
+## Note: For SQL Server, you can specify the 'year' corresponding to the
+## version, such as 2008
+
+# db.dbc.encrypted_password:
+## ADVANCED: Encrypted version of the database importer account password.
+## This is created by the user using the m_password utility.
+## If this parameter is specified, then it is used as the encrypted
+## password in the generated dbc file.
+## Otherwise, the clear-text password specified for the db.importer
+## parameter is used to create an encrypted version that is populated in
+## the generated dbc file.
+## Note: If the configuration is created through the prompt mode, then
+## the user provided password for the database importer account is encrypted
+## using m_password and populated in the dbc file; and the same password is
+## encrypted using $_adminToolsExe and used for datastore creation.
+
+# db.dbc.oledb_data_source:
+## ADVANCED: Parameter set to name of import host, when the localhost is being
+## used as a client for a remote SQL Server database. If you are using
+## a named sql server instance on a remote host, then this parameter should
+## be set to '[hostname]\\[instance-name]'. Otherwise, set it to the name
+## of the database host machine.
+
+# db.dbc.other_params:
+## ADVANCED: Extra parameters for the .dbc file.
+## The .dbc file contains a number of parameters specific to the
+## database type. These additional parameters can be specified
+## by setting db.dbc.other_params to: '<param1>: <value1>' '<param2>: <value2>'
+
+## For example, for a SQL Server database that is not on the local
+## deployment host, you would specify the host and instance
+## names by setting the value of db.dbc.other_params to:
+## 'oledb_data_source: [hostname]\[instance-name]'
+
+## To see the valid dbc parameters, open the appropriate sample .dbc file
+## in the deployment's config/sample-dbc-files directory.
+
+appserver.type: 'tomcat'
+## Web application server type; must be one of the supported application
+## server types.
+## Note: 'ab-app' is the application server that is internally supported
+## by Ab Initio with Co>Operating System version 3.1.1 onwards.
+## Typically, this is used for creating proof of concept deployments.
+## Valid values are:
+##  ab-app, jboss, jetty, tomcat, websphere, weblogic
+## Default values depend on value of deployment.type_basic:
+##     *: tomcat
+##     Y: ab-app
+
+# appserver.websphere.liberty: N
+## Specifies whether your WebSphere application server is using Liberty.
+## This is used to require user to provide search and log directories.
+
+# appserver.abapp.config_file:
+## The Ab Initio embedded application server uses a default
+## configuration file. Typically you do not need to modify
+## these settings. If you would like to specify your own
+## configuration for ab-app, then you can specify your own
+## ab-app configuration file.
+## See Co>Operating System Architects and Administrators Guide
+## documentation for details about this file.
+## A template file is available in:
+## <admin-tools-directory>/config/ab-app-default.properties
+
+webapp.clustered.deployment: 'N'
+## If this deployment is targeted for a clustered Web application server,
+## there are additional configuration parameters that need to be specified.
+
+# appserver.loadbalancer.host: $(resolvedHostname)
+## For a clustered deployment, the application cluster is fronted
+## by a load balancer. The import host communicates with the application
+## cluster through the load balancer.
+## If your load balancer URL is http://host1:port1 then specify host1 here.
+
+# appserver.loadbalancer.protocol: http
+## Protocol (http / https) for communicating with the load balancer fronting
+## the Web application cluster.
+## Valid values are:
+##  http, https
+
+# appserver.loadbalancer.port:
+## If the Web application load balancer URL is http://host1:port1 then
+## specify port1 here.
+## Default values depend on value of appserver.loadbalancer.protocol:
+##     http: 80
+##     https: 443
+
+# webapp.cluster.hosts:
+## OPTIONAL: Specifies a comma-separated list of host names or
+## IP addresses for the nodes in the cluster.
+## For example: '1.2.3.4, host2'. This will be used to create a
+## JGroups TCP configuration file. If no value is specified, the
+## default UDP multicast JGroups configuration will be used.
+## NOTE: Specify the actual host names, do not use 'localhost'.
+
+# webapp.cluster.port: 7800
+## OPTIONAL: Specifies the JGroups port number used by all nodes in the cluster.
+## This port applies to each node in the JGroups cluster.
+
+appserver.host: '{{ web_host }}'
+## Host running the Web server or the Web application server.
+## If your Web server URL is http://host1:port1 then specify host1 here.
+## Default values depend on value of webapp.clustered.deployment:
+##     *: $(resolvedHostname)
+##     Y|y: ${appserver.loadbalancer.host}
+
+appserver.port: '8080'
+## Port for the Web server or Web application server URL.
+## If your Web server URL is http://host1:port1 then specify port1 here.
+## Default values depend on value of webapp.clustered.deployment:
+##     *:
+##     Y|y: ${appserver.loadbalancer.port}
+
+# appserver.protocol: http
+## Protocol (http / https) for communicating with the application server
+## Valid values are:
+##  http, https
+## Default values depend on value of webapp.clustered.deployment:
+##     *: http
+##     Y|y: ${appserver.loadbalancer.protocol}
+
+# appserver.deploy_manager.username:
+# appserver.deploy_manager.password:
+# appserver.deploy_manager.mhub_encrypted_password:
+## OPTIONAL: Not needed if WAR file will be deployed manually.
+## Username/password for the Web application server. These are used
+## to deploy the WAR file to the application server.
+## If the application server is Tomcat7, this account must have
+## manager-script privileges.
+## Default values depend on value of appserver.type:
+##     *: /
+##     ab-app: admin/
+## Specify either a clear text or encrypted password.
+## If both are specified, the clear text password will be used.
+## To create an mhub_encrypted password, use the command 'mh-admin encrypt'.
+
+# appserver.tomcat_cluster_deploy_url:
+## OPTIONAL: A list of URLs, each separated by white-space corresponding to the
+## list of Tomcat application servers in the cluster. The Web Application will
+## be deployed to each of these URLs. Note that the same administrator
+## username / password will be used to deploy to each node in the cluster.
+## For example: http://host1:port1/manager, https://host2:port2/manager
+## Default values depend on value of appserver.type:
+##     *:
+##     tomcat: ${appserver.protocol}://${appserver.host}:${appserver.port}/manager
+
+# appserver.deploy_url:
+## OPTIONAL: Not needed if WAR file will be deployed manually.
+## URL for Web application deployment.
+## Default values depend on value of appserver.type:
+##     *:
+##     ab-app: ${appserver.protocol}://${appserver.host}:${appserver.abapp_derived_port}/manager
+##     tomcat: ${appserver.protocol}://${appserver.host}:${appserver.port}/manager
+
+# webapp.appserver.target:
+## Specifies a deployment target on the WebLogic application server.
+## If this is left empty, the server should have only a single target.
+
+# webapp.logdir:
+## Specifies a directory to which the Web application will write its
+## log file. By default this is the deployment's WEB-INF/logs directory.
+## Since this is not accessible for WebLogic, WebSphere-Liberty and JBoss,
+## a full path to the log directory must be provided.
+
+# webapp.searchindex:
+## Full directory path to the search index used by ${PRODUCT_NAME}
+## It is required for WebLogic, WebSphere-Liberty and JBoss and will be
+## used to set the search.indexDirectoryRoot configuration parameter.
+## The value must be an absolute path of the form:
+##  file:/absolute-path-to-search-index-dir/searchindex/
+
+# webapp.app_name: ${deployment.name}
+## ADVANCED: Generally the same as the deployment name.
+## Name of the Web application created.
+
+# webapp.url_when_import:
+## ADVANCED: Default is generally appropriate unless using HTTPS
+## The connection URL used by the import process to connect to the application
+## server. Sites may use HTTPS with appropriate port instead of HTTP.
+## NOTE: For application server type ab-app, the port number need not be specified.
+## In that case it is derived when creating and deploying the application.
+## Default values depend on value of appserver.type:
+##     *: ${appserver.protocol}://${appserver.host}:${appserver.port}/${webapp.app_name}
+##     ab-app: ${appserver.protocol}://${appserver.host}:${appserver.abapp_derived_port}/${webapp.app_name}
+
+# webapp.url_from_browser:
+## ADVANCED: Default is generally appropriate, verify when using load balancer
+## The connection URL used by the browser to connect to the application server.
+## Default values depend on value of webapp.clustered.deployment:
+##     *: ${webapp.url_when_import}
+##     Y: ${appserver.loadbalancer.protocol}://${appserver.loadbalancer.host}:${appserver.loadbalancer.port}/${webapp.app_name}
+
+# webapp.customization.dir:
+## ADVANCED: You can add custom content to the Web application by specifying
+## a directory that contains your customizations.
+
+# webapp.jgroups.config:
+## ADVANCED: Specifies a customized JGroups configuration file
+## for a clustered deployment. Note that this file will override
+## any list of cluster node addresses specified.
+## Sample files are available in $(getAdminToolsLocation)/ref/jgroups-config.
+
+# webapp.create_params:
+## ADVANCED: Additional parameters for WAR file creation.
+## The deployment process uses the $_adminToolsExe make war command
+## to create a WAR file that is deployed to the application server.
+## This command takes a number of options, which can be specified
+## through this parameter.
+## For example, to specify the https port used by web clients to access
+## the application, set this parameter to '-https-port <port-number>'
+## To see the valid options, run $_adminToolsExe help make war.
+
+# appserver.websphere.node:
+# appserver.websphere.server:
+
+# appserver.websphere.context_root: ${webapp.app_name}
+## IBM WebSphere-specific parameters
+
+lineage.server: 'N'
+## Specifies whether a lineage server is used by this deployment.
+## If set to 'Y', then subsequent lineage server application parameters
+## need to be specified as well.
+
+# lineageserver.type: ab-app
+## Web application server type for lineage server; must be one of the
+## supported server types.
+## Note: 'ab-app' is the application server that is internally supported
+## by Ab Initio with Co>Operating System version 3.1.1 onwards.
+## Valid values are:
+##  ab-app, jboss, jetty, tomcat, websphere, weblogic
+
+# lineageserver.app_name: ${deployment.name}-LS
+## ADVANCED: Generally the same as the deployment name with '-LS' suffix.
+## Name of the Lineage Server Web application created.
+
+# lineageserver.host: $(resolvedHostname)
+## Host running the Lineage Web application server.
+## If your lineage application server URL is http://host1:port1 then just
+## specify host1 here.
+
+# lineageserver.port:
+## Port for the lineage application server URL.
+## If your lineage server URL is http://host1:port1 then specify port1 here.
+
+# lineageserver.protocol: http
+## Protocol (http / https) for communicating with the lineage server
+## Valid values are:
+##  http, https
+
+# lineageserver.url:
+## URL used to communicate with the lineage server application.
+## This is stored as the value of the portal parameter: lineageView.serverURL
+## Default values depend on value of lineageserver.type:
+##     *: ${lineageserver.protocol}://${lineageserver.host}:${lineageserver.port}/${lineageserver.app_name}
+##     ab-app: ${lineageserver.protocol}://${lineageserver.host}:${lineageserver.abapp_derived_port}/${lineageserver.app_name}
+
+# lineageserver.deploy_manager.username:
+# lineageserver.deploy_manager.password:
+# lineageserver.deploy_manager.mhub_encrypted_password:
+## OPTIONAL: Not needed if lineage server WAR file will be deployed manually.
+## Username/password for the Lineage application server manager.
+## Used to deploy the WAR file to the Lineage server.
+## Note: If the Lineage application server is Tomcat7, this account must have
+## manager-script privileges.
+## Default values depend on value of lineageserver.type:
+##     *: /
+##     ab-app: admin/
+## Specify either a clear text or encrypted password.
+## If both are specified, the clear text password will be used.
+## To create an mhub_encrypted password, use the command 'mh-admin encrypt'.
+
+# lineageserver.deploy_url:
+## OPTIONAL: Not needed if Lineage server application WAR file will be deployed manually.
+## URL for Lineage application server deployment.
+## Default values depend on value of lineageserver.type:
+##     *:
+##     ab-app: ${lineageserver.protocol}://${lineageserver.host}:${lineageserver.abapp_derived_port}/manager
+##     tomcat: ${lineageserver.protocol}://${lineageserver.host}:${lineageserver.port}/manager
+
+# lsapp.create_params:
+## ADVANCED: Additional parameters for lineage server application WAR file.
+## The deployment process uses the $_adminToolsExe make war command
+## to create a WAR file that is deployed to the application server.
+## This command takes a number of options, which can be specified
+## through this parameter.
+## To see the valid options, run $_adminToolsExe help make war.
+
+# webapp.lineageserver.target: ${webapp.appserver.target}
+## Deployment target on the WebLogic application server.
+## If this is left empty, the server should have only a single target.
+
+# lineageserver.app.logdir: ${webapp.logdir}
+## Specifies a directory to which the Lineage server application will write
+## its log file. By default this is the deployment's WEB-INF/logs directory.
+## Since this is not accessible for WebLogic and JBoss, a full path to the
+## log directory must be provided.
+
+# lineageserver.websphere.node: ${appserver.websphere.node}
+# lineageserver.websphere.server: ${appserver.websphere.server}
+
+# lineageserver.websphere.context_root: ${lineageserver.app_name}
+## IBM WebSphere-specific parameters for lineage server
+
+bridge.config: 'bridge-7075'
+## Identifies the bridge configuration to be used by this Metadata Hub.
+## For Co>Operating System versions prior to 3.2.5, this is the
+## bridge configuration file in the $AB_HOME/config directory.
+## NOTE: For Co>Operating System versions 3.2.5 and later, this is
+## the name of the bridge configuration.
+
+# bridge.security_config: $(GetDefaultBridgeSecConfig)
+## Name of the security configuration file used by the Ab Initio bridge.
+## For Co>Operating System versions prior to 3.2.5, security configurations
+## are stored in $AB_HOME/config/bridge-configuration. For 3.2.5 and later
+## versions, they are in $AB_APPLICATION_HUB/config/bridge-configurations.
+## For example, if you are using AES-256 security type, then create a bridge
+## configuration for that, following the default examples specified in
+## $AB_APPLICATION_HUB/config/bridge-configurations. You can choose to
+## have the security configuration created automatically.
+
+# bridge.create.security.config: Y
+## Specifies whether the specified bridge security configuration should
+## be created automatically. If 'Y' is specified and the bridge security
+## configuration already exists, it will be removed and then a new one
+## created using the relevant bridge security parameters:
+## security config name, security type and RPC security key.
+
+# bridge.security_type: aes-128
+## Security type to be used in the Ab Initio bridge connection. This must
+## match the security type defined in the bridge security configuration.
+## Valid values are 'aes-128', 'aes-256' and 'http-basic'.
+## If you need to use security type 'aes-256', then you should
+## have created a correponding bridge security configuration and
+## use that for bridge.security_config.
+## Valid values are:
+##  aes-128, aes-256, http-basic
+
+# bridge.rpc.username: ab-initio-bridge
+# bridge.rpc.password:
+# bridge.rpc.mhub_encrypted_password:
+# bridge.rpc.ab_encrypted_password:
+## Username and password as specified in the bridge security configuration file.
+## Specify either a clear text or encrypted password.
+## If both are specified, the clear text password will be used.
+## To create an mhub_encrypted password, use the command 'mh-admin encrypt'.
+## To create an ab_encrypted password, use the command 'm_password -unrestricted'.
+
+bridge.rpc.aes128.key: ''
+## AES-128 security key as specified in the bridge security configuration
+## file. If you are using a custom security configuration file, make sure that
+## the value you provide here is the unencrypted value for the rpc-password
+## specified in your configuration file.
+
+bridge.rpc.aes128.ab_encrypted_key: '2,,ESM1izOdJ2Ht2cUjEuzt8dWqL0VglmF8nfqLEnXwNGd'
+## Encrypted (m_password) value for AES-128 security key
+
+bridge.rpc.aes128.mhub_encrypted_key: 'Hv3jJ46VFfUc+AyWbmofS0YABIAkc3awXuzy6jnldvk='
+## Encrypted (admin-tools) value for AES-128 security key
+
+# bridge.rpc.aes256.key:
+## AES-256 security key as specified in the bridge security configuration
+## file. If you are using a custom security configuration file, make sure that
+## the value you provide here is the unencrypted value for the rpc-password
+## specified in your configuration file.
+
+# bridge.rpc.aes256.ab_encrypted_key:
+## Encrypted (m_password) value for AES-256 security key
+
+# bridge.rpc.aes256.mhub_encrypted_key:
+## Encrypted (admin-tools) value for AES-256 security key
+
+bridge.host: '{{ bridge_host }}'
+## ADVANCED: Host where Ab Initio Bridge is running (named relative to the
+## application server host). Usually the importer host, and the host where
+## the deployment is performed.
+
+# bridge.protocol: http
+## ADVANCED: Protocol (HTTP or HTTPS) of the Ab Initio bridge.
+## Valid values are:
+##  http, https
+
+bridge.port: '{{ bridge_port }}'
+## ADVANCED: Port where Ab Initio bridge is listening, typically derived from
+## the bridge configuration file.
+
+bridge.url: '{{ bridge_host }}:{{ bridge_port }}'
+## ADVANCED: URL from the application server to the bridge.
+
+# bridge.cooperating_system.identifier:
+## ADVANCED: This is the logical name of the Co>Operating System from the
+## Application Hub apphubrc file. It is used to identify the Co>Operating System
+## when invoking middle tier server via bridge for downloading JDML. Specify a value
+## that is a valid AB_COOPERATING_SYSTEMS label from the application hub apphubrc file.
+## You need to specify a value only if it is different from the Co>Operating System
+## used by the ${PRODUCT_NAME} bridge.
+
+# security.encryption.useExternalKey:
+## ADVANCED: Determines whether the server will use an external key to encrypt
+## datastore values requiring two-way encryption. When set to 'N', a key provided
+## by Ab Initio will be used instead.
+## Default values depend on value of deployment.context:
+##     ag: Y
+##     mh: N
+
+# security.encryption.genKey: N
+## ADVANCED: Determines if an external security encryption key file should be
+## automatically generated and used. If set, gen-encryption-key.sh is used
+## to create an encryption key file in the deployment's config/.abinitio-sek
+## directory. This will be used to encrypt values that require two-way encryption.
+## NOTE: Refer to documentation regarding details for creating the encryption
+## key file. If you are specifying your own key file in a non-standard location,
+## then the value of this parameter should be 'N'.
+
+# security.encryption.keyDirectory:
+## ADVANCED: Specifies additional directory location(s) that will be searched for
+## external key encryption files. The location ~/.abinitio-sek plus any directory
+## specified in the datastore properties file will always be searched. Multiple
+## directories may be specified separated by a semicolon. Make sure the value is
+## within double quotes.
+## NOTE: Refer to documentation regarding details for creating the encryption
+## key file using the gen-encryption-key.sh utility.
+
+# deployment.preserve_existing_dir: True
+## If there is already an existing deployment at the specified deployment
+## directory.
+## Value is True or False. When False (default), the existing deployment
+## directory and contents are deleted before the new deployment is created.
+## When set to True, the existing deployment directory and contents are
+## not deleted.
+
+deployment.root: '/tmp/mhub_install/mhub/'
+## ADVANCED: It is extremely unlikely that you have to change this.
+## Value for AB_MHUB_LOCAL_ROOT, the parent directory of ui-profile directory.
+## Used by the Ab Initio bridge process.
+## Note: AB_MHUB_LOCAL_ROOT must be specified in your abinitiorc file before
+## creating a new deployment.
+
+# deployment.admin_tools_dir :  '/tmp/mhub_install/mhub/metadata-hub-3-3-6-1/admin-tools'
+## The deployment process invokes the $_adminExeBasename command for the
+## creation of the datastore and creation and deployment of the WAR file.
+## This is the directory where administration tools are installed.
+
+# deployment.tmpdir: ${TMPDIR:-/tmp}
+## As the deployment process runs, it creates a number of teporary files.
+## The directory to be used for creation of temporary files. This is
+## typically the standard temporary directory on your machine.
+
+
+# parameter created by deploy process: value computed during deployment
+deployment.dir: '/tmp/mhub_install/mhub/mhub_test3'

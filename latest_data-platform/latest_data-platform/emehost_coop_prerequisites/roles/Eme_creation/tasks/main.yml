@@ -1,0 +1,32 @@
+# Create EME instance.
+
+- name: Update directory permissions for EME creation
+  file:
+    dest: /opt/abinitio
+    mode: 02755
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+
+- name: Create directory for EME instance aieme.
+  file:
+    path: /opt/abinitio/eme/aieme
+    state: directory
+    mode: 02755
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+
+- name: Create technical repository
+  shell: |
+   . /home/{{ uusername }}/.profile
+   air repository create /opt/abinitio/eme/aieme
+  args:
+    chdir: /opt/abinitio/eme/aieme
+  become: yes
+  become_user: '{{ uusername }}'
+
+- name: Verify the eme creation
+  shell: |
+   . /home/{{ uusername }}/.profile
+   air ls
+  become: yes
+  become_user: '{{ uusername }}'

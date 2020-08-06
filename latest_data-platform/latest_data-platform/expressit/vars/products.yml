@@ -1,0 +1,11 @@
+ai_user: abiadm
+ai_grp: abiadm
+file_path: /home/ansible/packages
+eit_package: AIAppConf.V3-5-1-0.tar
+####Express IT version numer in format 3-5-1-0
+ver_num: 3-5-1-0
+deployment_name: aiappconf351
+db_host: use1fdinitioscm.aws.cioxhealth.com
+web_host: use1fdinitioweb.aws.cioxhealth.com
+bridge_host: use1fdinitiodev.aws.cioxhealth.com
+bridge_port: 7070

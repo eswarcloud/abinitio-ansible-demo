@@ -1,0 +1,19 @@
+# Copies the Co>Operating System key license from the nexus,
+# installs the license
+
+---
+
+- name: copy license from files folder
+  copy:
+    src: "{{ item }}"
+    dest: '{{ AB_TMPDIR }}'
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0775
+  with_fileglob:
+    - "./files/u05i*"
+
+- name: install the license on Co>Operating System
+  shell: |
+    . /home/{{ uusername }}/.profile
+    ab-key -y add {{ AB_TMPDIR }}

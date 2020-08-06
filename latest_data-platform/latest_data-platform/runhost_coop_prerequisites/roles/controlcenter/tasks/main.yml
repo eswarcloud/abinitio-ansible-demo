@@ -1,0 +1,77 @@
+# control center installation
+---
+
+- name: copy Control>Center setup.properties
+  template:
+    src: ./templates/setup.properties.j2
+    dest: /tmp/setup.properties
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0775
+
+- name: Copy Ops_reporter config file
+  template:
+    src: ./templates/ops_reporter_config.j2
+    dest: /opt/abinitio/ab-run-time/config/reporter-config.xml
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0775
+
+- name: Copy jdbc jar file from local to managed host
+  get_url:
+    url: https://nexus.cioxhealth.com/repository/binary-public/binary-public/AbInitioSoftware/AI3-5-1-5/sqljdbc_6.2.2.1_enu.tar.gz
+    dest: /tmp
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0775
+
+- name: unarchiving the mssql jdbc
+  unarchive:
+    src: /tmp/sqljdbc_6.2.2.1_enu.tar.gz
+    dest: /tmp
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0775
+    remote_src: yes
+
+- name: File copy
+  get_url:
+    url: https://nexus.cioxhealth.com/repository/binary-public/AbInitioSoftware/AI3-5-1-5/ControlCenter.V{{ cc_pkg_ver }}.tar.gz
+    dest: /tmp
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0775
+
+- name: unarchiving the tar file
+  unarchive:
+   src: /tmp/ControlCenter.V{{ cc_pkg_ver }}.tar.gz
+   dest: /tmp
+   owner: '{{ uusername }}'
+   group: '{{ ugroup }}'
+   mode: 0775
+   remote_src: yes
+
+- name: Creating Directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0775
+  with_items:
+    - /opt/abinitio/cc_install
+    - /opt/abinitio/cc_root
+
+- name: setting up controlcenter
+  become: yes
+  become_user: '{{ uusername }}'
+  shell: |
+   source /home/{{ uusername }}/.profile
+   pkg='{{ cc_package }}'
+   export AB_CC_HOME=/opt/abinitio/cc_install/controlcenter-{{ cc_ver_num }}
+   export AB_CC_LOCAL_ROOT=/opt/abinitio/cc_root
+   cd /tmp/ControlCenter.V{{ cc_pkg_ver }}
+   /tmp/ControlCenter.V{{ cc_pkg_ver }}/cc-install.ksh -install-root /opt/abinitio/cc_install
+   ${AB_CC_HOME}/bin/cc-admin create {{ deployment_name }} -from /tmp/setup.properties -batch true
+   cd $AB_CC_LOCAL_ROOT/{{ deployment_name }}
+   cp {{ deployment_name }}.war /tmp

@@ -1,0 +1,43 @@
+#All Variables needed across the roles
+env: prd
+update: false
+uusername: abiadm
+ugroup: abiadms
+tomcatuser: tomcat
+workdir: /tmp/abinst
+abinitio_version: V3-5-1-5
+installer: 'AbInitio.{{ abinitio_version }}.Linux-x86_gcc4p64.tar.gz'
+java_home: /usr/lib/jvm/java-1.8.0-openjdk
+sandbox_path: /persist/serial/prd/sand/
+mfs_control_path: /persist/serial/prd/mfs/
+code_serial_file_base: /persist/serial/prd
+data_area1: /persist/mfs_part1/prd
+data_area2: /persist/mfs_part2/prd
+AB_WORK_DIR: /persist/abinitio/prd/data
+AB_DATA_DIR: /persist/serial/prd/data
+AB_VOLATILE_DIR: /persist/serial/prd/data/volatile
+AB_TMPDIR: /tmp
+ebs_volume: /dev/nvme1n1
+project_rpath: /Projects/ciox/dpe
+project_name: dpe_batch
+mfs_depth: 16
+# standard environment
+branch_name: main
+scm_host: use1aphsdpscm01.aws.cioxhealth.com
+keygroup: CIOX01
+keyserver_port: 6150
+# Control center variables
+ocagent_password: 2,,oHbl_CCSf4JFCiYc2cNjnleIXvi5YYdR4unxHim8Pwo
+file_path: /tmp/ansible/packages
+cc_package: ControlCenter.V3-5-1-1.tar.gz
+cc_pkg_ver: 3-5-1-1
+cc_ver_num: 3.5.1.1
+db_host: hsdataplatform-prod.crvcvqox7pst.us-east-1.rds.amazonaws.com
+web_host: use1aphsdpweb01.aws.cioxhealth.com
+bridge_host: use1aphsdpdev01.aws.cioxhealth.com
+bridge_port: 7070
+opdb_username: svc_abinitio
+opdb_password: lhEEBD8xDTBV
+db_name: abinitio_ctrl
+deployment_name: controlcenter
+sql_jdbc_jar: /tmp/sqljdbc_6.2/enu/mssql-jdbc-6.2.2.jre8.jar

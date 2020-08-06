@@ -1,0 +1,13 @@
+ai_user: abiadm
+ai_grp: abiadms
+file_path: /tmp/ansible/packages
+mhub_local_root: /opt/abinitio/mhub/root
+mhub_package: MetadataHub.V3-3-6-1.tar.gz
+db_host: use1fdinitioscm.aws.cioxhealth.com
+web_host: use1fdinitioweb.aws.cioxhealth.com
+bridge_host: use1fdinitiodev.aws.cioxhealth.com
+bridge_port: 7070
+mhub_deployment_name: mhub_test
+mhub_db_name: mhubdb2
+mhubdb_username: mhubdb2
+sql_jdbc_jar: /tmp/saurabh/cc/sqljdbc_6.2/enu/mssql-jdbc-6.2.2.jre8.jar

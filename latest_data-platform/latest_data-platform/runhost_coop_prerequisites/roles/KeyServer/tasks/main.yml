@@ -1,0 +1,7 @@
+# Configure Key Sever on the EME host
+
+- name: Configure Key Sever on the EME host
+  shell: |
+    . /home/{{ uusername }}/.profile
+    abksconf -b /opt/abinitio/abinitio-app-hub/config -u {{ uusername }} -g {{ keygroup }} -p {{ keyserver_port }} -s
+  become: yes

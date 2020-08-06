@@ -1,0 +1,52 @@
+# Installs required software on the EC2 VMs and updates
+
+---
+
+- name: update cache
+  yum:
+    update_cache: yes
+
+- name: update packages
+  yum:
+    name: '*'
+    state: latest
+
+- name: install ksh
+  package:
+    name: ksh
+    state: present
+
+- name: install java8
+  package:
+    name: java-1.8.0-openjdk-devel.x86_64
+    state: present
+
+- name: install gdb
+  package:
+    name: gdb
+    state: present
+
+- name: remove java7 if exists
+  package:
+    name: java-1.7.0-openjdk
+    state: absent
+
+- name: set nproc to allow number of processes to be at least 2000.
+  become: yes
+  shell: echo "abinitio  soft  nproc 2000" >> /etc/security/limits.conf
+
+- name: Reboot the server and wait for it to come back up.
+  reboot:
+
+- name: Wait for the reboot to complete.
+  wait_for_connection:
+    connect_timeout: 20
+    sleep: 5
+    delay: 5
+    timeout: 300
+
+- name: Modify /etc/hosts file as per abinitio recommendation
+  copy:
+    src: ./files/hosts
+    dest: /etc/
+  become: yes

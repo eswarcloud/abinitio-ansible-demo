@@ -1,0 +1,26 @@
+# Creates ext4 file systems with the created mounts from partitions role
+
+---
+
+- name: Create ext4 filesystem on device /dev/nvme1n1p1
+  filesystem:
+    fstype: ext4
+    dev: /dev/nvme1n1p1
+
+
+- name: Create ext4 filesystem on device /dev/nvme1n1p1
+  filesystem:
+    fstype: ext4
+    dev: /dev/nvme1n1p2
+
+
+- name: Create ext4 filesystem on device /dev/nvme1n1p1
+  filesystem:
+    fstype: ext4
+    dev: /dev/nvme1n1p3
+
+
+- name: Create ext4 filesystem on device /dev/nvme1n1p1
+  filesystem:
+    fstype: ext4
+    dev: /dev/nvme1n1p4

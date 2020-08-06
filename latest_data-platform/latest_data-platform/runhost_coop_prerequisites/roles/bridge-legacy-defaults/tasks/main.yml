@@ -1,0 +1,13 @@
+# Establishes an Ab Initio Bridge connection
+
+---
+
+- name: create bridge legacy defaults
+  shell: |
+    . /home/{{ uusername }}/.profile
+    cp ${AB_APPLICATION_HUB}/config/bridge-configurations/default-aes128.xml.example \
+    ${AB_APPLICATION_HUB}/config/bridge-configurations/default-aes128.xml
+    cp ${AB_HOME}/config/bridge-config.xml.example ${AB_HOME}/config/bridge-config.xml
+    ab-bridge start
+  become: yes
+  become_user: '{{ uusername }}'

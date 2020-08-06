@@ -1,0 +1,24 @@
+# Create partitions with parted module
+
+- name: Create a new primary partition with a size of 100GB
+  parted:
+    device: /dev/nvme1n1
+    label: gpt
+    name: ab_work_dir_mount
+    number: 1
+    state: present
+    part_start: 1GB
+    part_end: 5GB
+    part_type: primary
+
+
+- name: Create a new extended partition with a size of 400GB
+  parted:
+    device: /dev/nvme1n1
+    label: gpt
+    name: serial_mount
+    number: 2
+    state: present
+    part_start: 5GB
+    part_end: 10GB
+    part_type: extended

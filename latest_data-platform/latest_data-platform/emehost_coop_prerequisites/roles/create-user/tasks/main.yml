@@ -1,0 +1,50 @@
+# Creates user accounts on the VMs and creates Ab Initio
+# environment variables
+
+---
+
+- name: Create abiadms group for admin id abiadm
+  group:
+    name: '{{ ugroup }}'
+    state: present
+
+- name: 'creating user {{ uusername }}'
+  user:
+    shell: /bin/ksh
+    name: '{{ uusername }}'
+    groups: '{{ ugroup }}'
+    generate_ssh_key: yes
+    ssh_key_file: /home/{{ uusername }}/.ssh/id_rsa
+    append: yes
+
+- name: Create AB_WORK_DIR and set permissions
+  file:
+    path: '{{ AB_WORK_DIR }}'
+    state: directory
+    mode: 2775
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+
+- name: Create AB_DATA_DIR and set permissions
+  file:
+    path: '{{ AB_DATA_DIR }}'
+    state: directory
+    mode: 2775
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+
+- name: Create AB_VOLATILE_DIR and set permissions
+  file:
+    path: '{{ AB_VOLATILE_DIR }}'
+    state: directory
+    mode: 2775
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+
+- name: copy artifacts
+  template:
+    src: profile.j2
+    dest: '/home/{{ uusername }}/.profile'
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0755

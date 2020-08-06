@@ -1,0 +1,48 @@
+# Start various abinitio services
+
+---
+
+- name: Run workload manager
+  shell: |
+   . /home/{{ uusername }}/.profile
+   abworkloadd &
+  become: yes
+
+- name: Copy Ops_reporter, abinitiorc and apphubrc config file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: '{{ uusername }}'
+    group: '{{ ugroup }}'
+    mode: 0775
+  with_items:
+    - { src: abinitiorc.j2, dest: /opt/abinitio/ab-run-time/config/abinitiorc }
+    - { src: apphubrc.j2, dest: /opt/abinitio/abinitio-app-hub/config/apphubrc }
+
+- name: start ab-reporter
+  shell: |
+   . /home/{{ uusername }}/.profile
+   ab-reporter start
+  become: yes
+  become_user: '{{ uusername }}'
+
+- name: Verify ab-bridge status
+  shell: |
+   . /home/{{ uusername }}/.profile
+   ab-bridge status
+  become: yes
+  become_user: '{{ uusername }}'
+
+- name: Verify ab-reporter status
+  shell: |
+   . /home/{{ uusername }}/.profile
+   ab-reporter status
+  become: yes
+  become_user: '{{ uusername }}'
+
+- name: Verify EME connectivity
+  shell: |
+   . /home/{{ uusername }}/.profile
+   air ls
+  become: yes
+  become_user: '{{ uusername }}'
